@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dyslexia AI Helper</title>
+    <!-- OpenDyslexic font-->
+    <link href="https://cdn.jsdelivr.net/gh/antijingoist/open-dyslexic/open-dyslexic.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='dyslexia_css.css') }}">
+</head>
+<body>
+    <main>
+        <h1>Dyslexia AI Helper</h1>
+        <form method="POST" enctype="multipart/form-data" id="textForm">
+            <label for="text">Paste or type your text here:</label>
+            <textarea id="text" name="text" placeholder="Enter text or upload a file...">{{ original_text}}</textarea>
+
+            <label for="file">Or upload a text file:</label>
+            <input type="file" id="file" name="file" accept=".txt" />
+
+            <label for="language">Select Language:</label>
+            <select id="language" name="language" required>
+                {% for lang in ['english', 'spanish', 'french', 'german', 'italian', 'portuguese', 'russian',
+                'chinese(simplified)', 'chinese(traditional)', 'japanese', 'korean', 'hindi', 'arabic', 'bengali',
+                'turkish', 'dutch', 'swedish', 'vietnamese', 'polish']%}
+                <option value="{{lang}}" {% if session.get('language') == lang %}selected{% endif %}>
+                    {{ lang.title().replace('(', '(').replace('_', ' ') }}</option>
+                {% endfor %}
+            </select>
+            <label for="font_family">Select Font:</label>
+            <select id="font_family" name="font_family" required>
+                <option value="arial" {% if session.get('font_family') == 'arial' %}selected{% endif %}>Arial</option>
+                <option value="opendyslexic" {% if session.get('font_family') == 'opendyslexic' %}selected{% endif %}>OpenDyslexic</option>
+                <option value="times" {% if session.get('font_family') == 'times' %}selected{% endif %}>Times New Roman</option>
+                <option value="comic" {% if session.get('font_family') == 'comic' %}selected{% endif %}>Comic Sans MS</option>
+            </select>
+
+            <div class="color-blind-toggle">
+                <input type="checkbox" id="colorBlindMode" name="color_blind"/>
+                <label for="colorBlindMode" class="color-blind-label">Enable Color Blind Mode</label>
+            </div>
+
+            <div class="buttons">
+                <button type="submit">Simplify & Translate</button>
+            </div>
+        </form>
+
+        {% if simplified %}
+        <div class="output-section" id="simplifiedText" style="font-family: {{ session.get('font_family') }};">
+            {{ simplified }}
+        </div>
+        {% endif %}
+
+        {% if audio_file %}
+        <h3>Listen to Audio:</h3>
+        <audio controls id="audioPlayer">
+            <source src="{{ url_for('static', filename=audio_file) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <br><br>
+        <a href="{{ url_for('static', filename=audio_file) }}" download>
+            <button type="button">Download Audio</button>
+        </a>
+        {% endif %}
+
+    </main>
+    <script>
+        const fontSelect = document.getElementById('font_family');
+        const outputSection = document.getElementById('simplifiedText');
+
+        const fontFamilies = {
+            'default': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            'opendyslexic': "'OpenDyslexic', Arial, sans-serif",
+            'arial': "Arial, sans-serif",
+            'times': "'Times New Roman', serif",
+            'comic': "'Comic Sans MS', cursive, sans-serif"
+        };
+
+        if (fontSelect && outputSection) {
+            fontSelect.addEventListener('change', () => {
+                const selectedFont = fontSelect.value;
+                outputSection.style.fontFamily = fontFamilies[selectedFont] || fontFamilies['default'];
+            });
+        }
+        const colorBlindCheckbox = document.getElementById('colorBlindMode');
+        colorBlindCheckbox.addEventListener('change', () => {
+            document.body.classlist.toggle('color-blind', colorBlindCheckbox.checked);
+        });
+    </script>
+</body> </html>
