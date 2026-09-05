@@ -1,5 +1,5 @@
 # Dyslexia AI Helper
-This project is a Flask web application designed to make text easier to read for people with dyslexia. It uses AI to simplify text, translate it into different languages, and convert it to speech.
+This project is a Flask web application designed to make text easier to read for people with dyslexia. It uses AI to simplify text, translate it into different languages, and convert it to speech. It is a current prototype
 
 ## File: `app.py`
 
